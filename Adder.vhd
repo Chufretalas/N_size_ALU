@@ -24,7 +24,7 @@ ENTITY Adder IS
         i_Data_1 : IN STD_LOGIC;
         i_Carry_In : IN STD_LOGIC;
         o_Result : OUT STD_LOGIC;
-        o_Carry_Out : OUT STD_LOGIC;
+        o_Carry_Out : OUT STD_LOGIC
     );
 
 END ENTITY Adder;

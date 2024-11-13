@@ -14,7 +14,7 @@ ENTITY ALU_1_bit IS
         i_Operation : IN T_Operations;
         o_Result : OUT STD_LOGIC;
         o_Carry_Out : OUT STD_LOGIC;
-        o_Set : OUT STD_LOGIC;
+        o_Set : OUT STD_LOGIC
     );
 
 END ENTITY ALU_1_bit;
