@@ -1,5 +1,5 @@
 LIBRARY ieee;
-use ieee.std_logic_1164.all;
+USE ieee.std_logic_1164.ALL;
 USE work.my_types.ALL;
 USE std.env.finish;
 
@@ -28,6 +28,36 @@ BEGIN
     PROCESS IS
     BEGIN
         WAIT FOR 2 ns;
+        -- Adding
+        r_B_Negate <= '0';
+        r_A_Invert <= '0';
+        r_Operation <= OP_Adder;
+
+        r_As <= "0000000000000001";
+        r_Bs <= "0000000000000001";
+        WAIT FOR 2 ns;
+        ASSERT w_Results = "0000000000000010" REPORT "Failed Test 1" SEVERITY failure;
+        
+        r_As <= "0000000000000001";
+        r_Bs <= "0000000000111111";
+        WAIT FOR 2 ns;
+        ASSERT w_Results = "0000000001000000" REPORT "Failed Test 2" SEVERITY failure;
+
+        r_As <= "0000001001010001";
+        r_Bs <= "0001000001110000";
+        WAIT FOR 2 ns;
+        ASSERT w_Results = "0001001011000001" REPORT "Failed Test 3" SEVERITY failure;
+
+        -- Subtracting (A - B)
+        r_B_Negate <= '1';
+        r_A_Invert <= '0';
+        r_Operation <= OP_Adder;
+
+        
+        r_As <= "0000000000000111"; -- 7
+        r_Bs <= "0000000000000101"; -- 5
+        WAIT FOR 2 ns;
+        ASSERT w_Results = "0000000000000010" REPORT "Failed Test 4" SEVERITY failure;
         finish;
     END PROCESS;
 
