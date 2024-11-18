@@ -3,18 +3,24 @@ USE ieee.std_logic_1164.ALL;
 USE work.my_types.ALL;
 USE std.env.finish;
 
-ENTITY ALU_16_bit_TB IS
-END ENTITY ALU_16_bit_TB;
+ENTITY N_size_ALU_TB IS
+END ENTITY N_size_ALU_TB;
 
-ARCHITECTURE test OF ALU_16_bit_TB IS
+ARCHITECTURE test OF N_size_ALU_TB IS
+
+    CONSTANT SIZE : INTEGER := 16;
+
     SIGNAL r_B_Negate, r_A_Invert : STD_LOGIC := '0';
     SIGNAL r_Operation : T_Operations := OP_AND;
-    SIGNAL r_As, r_Bs : STD_LOGIC_VECTOR(15 DOWNTO 0) := "0000000000000000";
-    SIGNAL w_Results : STD_LOGIC_VECTOR(15 DOWNTO 0);
+    SIGNAL r_As, r_Bs : STD_LOGIC_VECTOR(SIZE - 1 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL w_Results : STD_LOGIC_VECTOR(SIZE - 1 DOWNTO 0);
     SIGNAL w_Zero, w_Overflow : STD_LOGIC;
 BEGIN
 
-    UUT : ENTITY work.ALU_16_bit_Top
+    UUT : ENTITY work.N_size_ALU
+        GENERIC MAP(
+            SIZE => SIZE
+        )
         PORT MAP(
             i_B_Negate => r_B_Negate,
             i_A_Invert => r_A_Invert,

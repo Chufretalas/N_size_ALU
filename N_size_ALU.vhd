@@ -2,26 +2,32 @@ LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE work.my_types.ALL;
 
-ENTITY ALU_16_bit_Top IS
+ENTITY N_size_ALU IS
+
+    GENERIC (
+        SIZE : INTEGER -- the bit width, should be > 2
+    );
+
     PORT (
         i_B_Negate : IN STD_LOGIC;
         i_A_Invert : IN STD_LOGIC;
         i_Operation : IN T_Operations;
-        i_As : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
-        i_Bs : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
-        o_Results : OUT STD_LOGIC_VECTOR(15 DOWNTO 0);
+        i_As : IN STD_LOGIC_VECTOR(SIZE - 1 DOWNTO 0);
+        i_Bs : IN STD_LOGIC_VECTOR(SIZE - 1 DOWNTO 0);
+        o_Results : OUT STD_LOGIC_VECTOR(SIZE - 1 DOWNTO 0);
         o_Zero : OUT STD_LOGIC;
         o_Overflow : OUT STD_LOGIC
     );
-END ENTITY ALU_16_bit_Top;
+END ENTITY N_size_ALU;
 
-ARCHITECTURE RTL OF ALU_16_bit_Top IS
+ARCHITECTURE RTL OF N_size_ALU IS
 
-    SIGNAL w_Carry_Bridges : STD_LOGIC_VECTOR(14 DOWNTO 0);
+    SIGNAL w_Carry_Bridges : STD_LOGIC_VECTOR(SIZE - 2 DOWNTO 0);
     SIGNAL w_Less_Bridge : STD_LOGIC;
+    SIGNAL r_All_Zeroes : STD_LOGIC_VECTOR(SIZE - 1 DOWNTO 0) := (OTHERS => '0'); -- This is very very ugly, but it was the only working sollution I was capable of making
 BEGIN
 
-    ULA_1 : ENTITY work.ALU_1_bit
+    FIRST_ULA : ENTITY work.ALU_1_bit
         PORT MAP(
             i_A => i_As(0),
             i_B => i_Bs(0),
@@ -35,7 +41,7 @@ BEGIN
             o_Set => OPEN
         );
 
-    GEN_ULA_CHAIN : FOR i IN 1 TO 14 GENERATE
+    GEN_ULA_CHAIN : FOR i IN 1 TO SIZE - 2 GENERATE
         ULA_X : ENTITY work.ALU_1_bit
             PORT MAP(
                 i_A => i_As(i),
@@ -51,20 +57,20 @@ BEGIN
             );
     END GENERATE GEN_ULA_CHAIN;
 
-    ULA_16 : ENTITY work.ALU_1_bit
+    LAST_ULA : ENTITY work.ALU_1_bit
         PORT MAP(
-            i_A => i_As(15),
-            i_B => i_Bs(15),
+            i_A => i_As(SIZE - 1),
+            i_B => i_Bs(SIZE - 1),
             i_A_Invert => i_A_Invert,
             i_B_Invert => i_B_Negate,
-            i_Carry_In => w_Carry_Bridges(14),
+            i_Carry_In => w_Carry_Bridges(SIZE - 2),
             i_Less => '0',
             i_Operation => i_Operation,
-            o_Result => o_Results(15),
+            o_Result => o_Results(SIZE - 1),
             o_Carry_Out => o_Overflow,
             o_Set => w_Less_Bridge
         );
 
-    o_Zero <= '1' WHEN o_Results = "0000000000000000" ELSE
+    o_Zero <= '1' WHEN o_Results = r_All_Zeroes ELSE
         '0';
 END RTL;
