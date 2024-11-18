@@ -10,7 +10,8 @@ ENTITY ALU_16_bit_Top IS
         i_As : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
         i_Bs : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
         o_Results : OUT STD_LOGIC_VECTOR(15 DOWNTO 0);
-        o_Zero : OUT STD_LOGIC
+        o_Zero : OUT STD_LOGIC;
+        o_Overflow : OUT STD_LOGIC
     );
 END ENTITY ALU_16_bit_Top;
 
@@ -60,7 +61,7 @@ BEGIN
             i_Less => '0',
             i_Operation => i_Operation,
             o_Result => o_Results(15),
-            o_Carry_Out => OPEN,
+            o_Carry_Out => o_Overflow,
             o_Set => w_Less_Bridge
         );
 
