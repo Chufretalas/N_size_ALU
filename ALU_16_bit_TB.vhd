@@ -28,7 +28,7 @@ BEGIN
     PROCESS IS
     BEGIN
         WAIT FOR 2 ns;
-        -- Adding
+        -- Adding (A + B)
         r_B_Negate <= '0';
         r_A_Invert <= '0';
         r_Operation <= OP_Adder;
@@ -37,7 +37,7 @@ BEGIN
         r_Bs <= "0000000000000001";
         WAIT FOR 2 ns;
         ASSERT w_Results = "0000000000000010" REPORT "Failed Test 1" SEVERITY failure;
-        
+
         r_As <= "0000000000000001";
         r_Bs <= "0000000000111111";
         WAIT FOR 2 ns;
@@ -52,12 +52,90 @@ BEGIN
         r_B_Negate <= '1';
         r_A_Invert <= '0';
         r_Operation <= OP_Adder;
-
-        
         r_As <= "0000000000000111"; -- 7
         r_Bs <= "0000000000000101"; -- 5
         WAIT FOR 2 ns;
         ASSERT w_Results = "0000000000000010" REPORT "Failed Test 4" SEVERITY failure;
+
+        -- Equal (A == B)
+        r_B_Negate <= '1';
+        r_A_Invert <= '0';
+        r_Operation <= OP_Adder;
+        r_As <= "0000000000000111";
+        r_Bs <= "0000000000000111";
+        WAIT FOR 2 ns;
+        ASSERT w_Zero = '1' REPORT "Failed Test 5" SEVERITY failure;
+
+        r_As <= "0000100000000111";
+        r_Bs <= "0000000000000111";
+        WAIT FOR 2 ns;
+        ASSERT w_Zero = '0' REPORT "Failed Test 6" SEVERITY failure;
+
+        r_As <= "0000100000000111";
+        r_Bs <= "0010000000000111";
+        WAIT FOR 2 ns;
+        ASSERT w_Zero = '0' REPORT "Failed Test 7" SEVERITY failure;
+
+        -- Less (A < B)
+        r_B_Negate <= '1';
+        r_A_Invert <= '0';
+        r_Operation <= OP_Less;
+        r_As <= "0000000000000111";
+        r_Bs <= "0000000000000111";
+        WAIT FOR 2 ns;
+        ASSERT w_Results(0) = '0' REPORT "Failed Test 8" SEVERITY failure;
+
+        r_As <= "0000100000000111";
+        r_Bs <= "0000000000000111";
+        WAIT FOR 2 ns;
+        ASSERT w_Results(0) = '0' REPORT "Failed Test 9" SEVERITY failure;
+
+        r_As <= "0000100000000111";
+        r_Bs <= "0010000000000111";
+        WAIT FOR 2 ns;
+        ASSERT w_Results(0) = '1' REPORT "Failed Test 10" SEVERITY failure;
+
+        r_As <= "0000000000001000";
+        r_Bs <= "0000000000001001";
+        WAIT FOR 2 ns;
+        ASSERT w_Results(0) = '1' REPORT "Failed Test 11" SEVERITY failure;
+
+        -- Subtracting (A AND B)
+        r_B_Negate <= '0';
+        r_A_Invert <= '0';
+        r_Operation <= OP_AND;
+        r_As <= "0101000000000000";
+        r_Bs <= "0011000000000000";
+        WAIT FOR 2 ns;
+        ASSERT w_Results = "0001000000000000" REPORT "Failed Test 12" SEVERITY failure;
+
+        -- Subtracting (A OR B)
+        r_B_Negate <= '0';
+        r_A_Invert <= '0';
+        r_Operation <= OP_OR;
+        r_As <= "0101000000000000";
+        r_Bs <= "0011000000000000";
+        WAIT FOR 2 ns;
+        ASSERT w_Results = "0111000000000000" REPORT "Failed Test 13" SEVERITY failure;
+
+        -- Subtracting (A NAND B)
+        r_B_Negate <= '1';
+        r_A_Invert <= '1';
+        r_Operation <= OP_OR;
+        r_As <= "0101000000000000";
+        r_Bs <= "0011000000000000";
+        WAIT FOR 2 ns;
+        ASSERT w_Results = "1110111111111111" REPORT "Failed Test 14" SEVERITY failure;
+
+        -- Subtracting (A NOR B)
+        r_B_Negate <= '1';
+        r_A_Invert <= '1';
+        r_Operation <= OP_AND;
+        r_As <= "0101000000000000";
+        r_Bs <= "0011000000000000";
+        WAIT FOR 2 ns;
+        ASSERT w_Results = "1000111111111111" REPORT "Failed Test 15" SEVERITY failure;
+
         finish;
     END PROCESS;
 
