@@ -185,7 +185,7 @@ begin
 
             -- Cycles between all possible operations: AND -> OR -> NOR -> ADD -> SUB -> LESSER THAN
             if r_Switch_1 = '1' and w_Switch_1 = '0' then
-                if r_Top_Operation = "101" then
+                if r_Top_Operation = "110" then
                     r_Top_Operation <= "000";
                 else
                     r_Top_Operation <= std_logic_vector(unsigned(r_Top_Operation) + 1);
@@ -194,12 +194,12 @@ begin
 
             -- Changes the display mode
             if r_Switch_2 = '1' and w_Switch_2 = '0' then
-                r_Display_Mode <= not r_Display_Mode;
+                r_As <= std_logic_vector(unsigned(r_As) + 1);
             end if;
 
             -- Changes the A input
             if r_Switch_3 = '1' and w_Switch_3 = '0' then
-                r_As <= std_logic_vector(unsigned(r_As) + 1);
+                r_Display_Mode <= not r_Display_Mode;
             end if;
 
             -- Changes the B input
@@ -219,35 +219,45 @@ begin
                     r_B_Negate        <= '0';
                     r_A_Invert        <= '0';
 
-                when "010" => -- NOR
+                when "010" => -- NAND
+                    r_Internal_ALU_OP <= OP_OR;
+                    r_B_Negate        <= '1';
+                    r_A_Invert        <= '1';
+
+                when "011" => -- NOR
                     r_Internal_ALU_OP <= OP_AND;
                     r_B_Negate        <= '1';
                     r_A_Invert        <= '1';
 
-                when "011" => -- ADD
+                when "100" => -- ADD
                     r_Internal_ALU_OP <= OP_Adder;
                     r_B_Negate        <= '0';
                     r_A_Invert        <= '0';
 
-                when "100" => -- SUB
+                when "101" => -- SUB
                     r_Internal_ALU_OP <= OP_Adder;
                     r_B_Negate        <= '1';
                     r_A_Invert        <= '0';
 
-                when "101" => -- SLT (Lesser than)
+                when "110" => -- SLT (Lesser than)
                     r_Internal_ALU_OP <= OP_Less;
                     r_B_Negate        <= '1';
+                    r_A_Invert        <= '0';
+
+                when others => -- Default to avoid latches
+                    r_Internal_ALU_OP <= OP_AND;
+                    r_B_Negate        <= '0';
                     r_A_Invert        <= '0';
             end case;
         end if;
     end process;
 
     -- Applies two's complement if the operation is SUB and the result is negative (overflow == 0), otherwise it shows the result
-    w_Display_Results <= std_logic_vector(unsigned(not w_Results) + 1) when (r_Top_Operation = "100" and w_Overflow = '0') else
+    w_Display_Results <= std_logic_vector(unsigned(not w_Results) + 1) when (r_Top_Operation = "101" and w_Overflow = '0') else
         w_Results;
 
     -- Inverts the overflow if the operation is SUB so it shows 1 for a negative result and 0 for a positive one, otherwise it shows the overflow
-    w_Overflow_Display_Bit <= not w_Overflow when r_Top_Operation = "100" else
+    w_Overflow_Display_Bit <= not w_Overflow when r_Top_Operation = "101" else
         w_Overflow;
 
     -- Shows the A input or the overflow (or the signal if it's a SUB operation) on the left display
