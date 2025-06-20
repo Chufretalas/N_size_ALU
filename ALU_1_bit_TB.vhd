@@ -128,7 +128,7 @@ BEGIN
         WAIT FOR 2 ns;
         ASSERT r_Result = '0' REPORT "Failed Test 16" SEVERITY failure;
 
-        ---------------------------- TESTING Adder - Operation = OP_AND && A_Invert = 1 && B_Invert = 1 ----------------------------
+        ---------------------------- TESTING Adder - Operation = OP_Adder && A_Invert = 0 && B_Invert = 0 ----------------------------
         r_Operation <= OP_Adder;
         r_A_Invert <= '0';
         r_B_Invert <= '0';
