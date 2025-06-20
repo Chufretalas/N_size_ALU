@@ -40,8 +40,8 @@ architecture rtl of Go_Board_ALU_Top is
     signal r_B_Negate        : std_logic                    := '0';
     signal r_A_Invert        : std_logic                    := '0';
     signal r_Internal_ALU_OP : T_Operations                 := OP_AND;
-    signal r_As              : std_logic_vector(3 downto 0) := "0110";
-    signal r_Bs              : std_logic_vector(3 downto 0) := "1010";
+    signal r_As              : std_logic_vector(3 downto 0) := ((others => '0'));
+    signal r_Bs              : std_logic_vector(3 downto 0) := ((others => '0'));
 
     signal w_Results  : std_logic_vector(3 downto 0);
     signal w_Zero     : std_logic;
@@ -75,12 +75,15 @@ architecture rtl of Go_Board_ALU_Top is
     signal w_Segment2_F : std_logic;
     signal w_Segment2_G : std_logic;
 
-    signal w_Display1_Value       : std_logic_vector(3 downto 0);
-    signal w_Display2_Value       : std_logic_vector(3 downto 0);
-    signal w_Display_Results      : std_logic_vector(3 downto 0);
-    signal w_Overflow_Display_Bit : std_logic;
+    signal w_Display1_Value         : std_logic_vector(3 downto 0);
+    signal w_Display2_Value         : std_logic_vector(3 downto 0);
+    signal w_Display_Results        : std_logic_vector(3 downto 0);
+    signal w_Overflow_Display_Value : std_logic_vector(3 downto 0);
 
-    signal r_Top_Operation : std_logic_vector(2 downto 0) := "000";
+    signal r_Display1_Special : std_logic := '0';
+    signal r_Display2_Special : std_logic := '0';
+
+    signal r_Top_Operation : std_logic_vector(2 downto 0) := ((others => '0'));
     signal r_Display_Mode  : std_logic                    := '0'; -- '0' shows (A | B), '1' shows (overflow | result)
 begin
 
@@ -117,15 +120,15 @@ begin
     -- ================ Displays ================ --
     SevenSeg1_Inst : entity work.Binary_To_7Segment
         port map(
-            i_Clk        => i_Clk,
-            i_Binary_Num => w_Display1_Value,
-            o_Segment_A  => w_Segment1_A,
-            o_Segment_B  => w_Segment1_B,
-            o_Segment_C  => w_Segment1_C,
-            o_Segment_D  => w_Segment1_D,
-            o_Segment_E  => w_Segment1_E,
-            o_Segment_F  => w_Segment1_F,
-            o_Segment_G  => w_Segment1_G
+            i_Binary_Num        => w_Display1_Value,
+            i_Is_Special_Symbol => r_Display1_Special,
+            o_Segment_A         => w_Segment1_A,
+            o_Segment_B         => w_Segment1_B,
+            o_Segment_C         => w_Segment1_C,
+            o_Segment_D         => w_Segment1_D,
+            o_Segment_E         => w_Segment1_E,
+            o_Segment_F         => w_Segment1_F,
+            o_Segment_G         => w_Segment1_G
         );
 
     o_Segment1_A <= not w_Segment1_A;
@@ -138,15 +141,15 @@ begin
 
     SevenSeg2_Inst : entity work.Binary_To_7Segment
         port map(
-            i_Clk        => i_Clk,
-            i_Binary_Num => w_Display2_Value,
-            o_Segment_A  => w_Segment2_A,
-            o_Segment_B  => w_Segment2_B,
-            o_Segment_C  => w_Segment2_C,
-            o_Segment_D  => w_Segment2_D,
-            o_Segment_E  => w_Segment2_E,
-            o_Segment_F  => w_Segment2_F,
-            o_Segment_G  => w_Segment2_G
+            i_Binary_Num        => w_Display2_Value,
+            i_Is_Special_Symbol => r_Display2_Special,
+            o_Segment_A         => w_Segment2_A,
+            o_Segment_B         => w_Segment2_B,
+            o_Segment_C         => w_Segment2_C,
+            o_Segment_D         => w_Segment2_D,
+            o_Segment_E         => w_Segment2_E,
+            o_Segment_F         => w_Segment2_F,
+            o_Segment_G         => w_Segment2_G
         );
 
     o_Segment2_A <= not w_Segment2_A;
@@ -256,14 +259,13 @@ begin
     w_Display_Results <= std_logic_vector(unsigned(not w_Results) + 1) when (r_Top_Operation = "101" and w_Overflow = '0') else
         w_Results;
 
-    -- Inverts the overflow if the operation is SUB so it shows 1 for a negative result and 0 for a positive one, otherwise it shows the overflow
-    w_Overflow_Display_Bit <= not w_Overflow when r_Top_Operation = "101" else
-        w_Overflow;
+    -- Shoes s speacil charcter on the left display if it's showing the results of the SUB operations, otherwise it shows the number
+    r_Display1_Special <= '1' when r_Display_Mode = '1' and r_Top_Operation = "101" else
+        '0';
 
     -- Shows the A input or the overflow (or the signal if it's a SUB operation) on the left display
     w_Display1_Value <= r_As when r_Display_Mode = '0' else
-        "0001" when w_Overflow_Display_Bit = '1' else
-        "0000";
+        "000" & w_Overflow; -- on SUB (special char): 0000 = "minus sign", 0001 = "all off". Non-SUB (showing numbers) show 0 or 1 for the overflow 
 
     -- Shows the B input or the result on the right display
     w_Display2_Value <= r_Bs when r_Display_Mode = '0' else
