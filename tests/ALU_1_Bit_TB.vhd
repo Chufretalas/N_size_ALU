@@ -12,7 +12,7 @@ ARCHITECTURE test OF ALU_1_bit_TB IS
     SIGNAL r_Result, r_Carry_Out, r_Set : STD_LOGIC;
 BEGIN
 
-    UUT : ENTITY work.ALU_1_bit
+    UUT : ENTITY work.ALU_1_Bit
         PORT MAP(
             i_A => r_A,
             i_B => r_B,

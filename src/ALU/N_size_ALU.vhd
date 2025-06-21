@@ -27,7 +27,7 @@ ARCHITECTURE RTL OF N_size_ALU IS
     SIGNAL r_All_Zeroes : STD_LOGIC_VECTOR(SIZE - 1 DOWNTO 0) := (OTHERS => '0'); -- This is very very ugly, but it was the only working sollution I was capable of making
 BEGIN
 
-    FIRST_ULA : ENTITY work.ALU_1_bit
+    FIRST_ULA : ENTITY work.ALU_1_Bit
         PORT MAP(
             i_A => i_As(0),
             i_B => i_Bs(0),
@@ -42,7 +42,7 @@ BEGIN
         );
 
     GEN_ULA_CHAIN : FOR i IN 1 TO SIZE - 2 GENERATE
-        ULA_X : ENTITY work.ALU_1_bit
+        ULA_X : ENTITY work.ALU_1_Bit
             PORT MAP(
                 i_A => i_As(i),
                 i_B => i_Bs(i),
@@ -57,7 +57,7 @@ BEGIN
             );
     END GENERATE GEN_ULA_CHAIN;
 
-    LAST_ULA : ENTITY work.ALU_1_bit
+    LAST_ULA : ENTITY work.ALU_1_Bit
         PORT MAP(
             i_A => i_As(SIZE - 1),
             i_B => i_Bs(SIZE - 1),

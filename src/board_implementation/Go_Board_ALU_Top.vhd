@@ -75,10 +75,9 @@ architecture rtl of Go_Board_ALU_Top is
     signal w_Segment2_F : std_logic;
     signal w_Segment2_G : std_logic;
 
-    signal w_Display1_Value         : std_logic_vector(3 downto 0);
-    signal w_Display2_Value         : std_logic_vector(3 downto 0);
-    signal w_Display_Results        : std_logic_vector(3 downto 0);
-    signal w_Overflow_Display_Value : std_logic_vector(3 downto 0);
+    signal w_Display1_Value  : std_logic_vector(3 downto 0);
+    signal w_Display2_Value  : std_logic_vector(3 downto 0);
+    signal w_Display_Results : std_logic_vector(3 downto 0);
 
     signal r_Display1_Special : std_logic := '0';
     signal r_Display2_Special : std_logic := '0';

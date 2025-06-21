@@ -2,7 +2,7 @@ LIBRARY IEEE;
 USE ieee.std_logic_1164.ALL;
 USE work.my_types.ALL;
 
-ENTITY ALU_1_bit IS
+ENTITY ALU_1_Bit IS
 
     PORT (
         i_A : IN STD_LOGIC;
@@ -17,9 +17,9 @@ ENTITY ALU_1_bit IS
         o_Set : OUT STD_LOGIC
     );
 
-END ENTITY ALU_1_bit;
+END ENTITY ALU_1_Bit;
 
-ARCHITECTURE RTL OF ALU_1_bit IS
+ARCHITECTURE RTL OF ALU_1_Bit IS
 
     SIGNAL w_Treated_A, w_Treated_B, w_And_Result, w_Or_Result, w_Adder_Result : STD_LOGIC;
 
